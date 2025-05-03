@@ -1,0 +1,72 @@
+services:
+  wordpress:
+    image: wordpress:6.8.1-apache
+    ports:
+      - "8000:80"
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: rade
+      WORDPRESS_DB_PASSWORD: rade123
+      WORDPRESS_DB_NAME: wordpress
+      APACHE_SERVER_NAME: localhost
+    volumes:
+      - ./backend/wp-content/plugins/custom-api:/var/www/html/wp-content/plugins/custom-api
+      - ./setup-wordpress.sh:/var/www/html/setup-wordpress.sh
+    depends_on:
+      - mariadb
+    networks:
+      - fullstack
+    # command: >
+    #   bash -c "echo 'ServerName localhost' >> /etc/apache2/apache2.conf && apache2-foreground"
+
+  mariadb:
+    image: mariadb:11.6.2
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: rade
+      MYSQL_PASSWORD: rade123
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - fullstack
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mariadb
+      MYSQL_ROOT_PASSWORD: root123
+    depends_on:
+      - mariadb
+    networks:
+      - fullstack
+
+  frontend:
+    build:
+      context: ./front
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+    working_dir: /app
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    networks:
+      - fullstack
+    # healthcheck:
+    #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+    #   interval: 30s
+    #   timeout: 3s
+    #   retries: 3
+    restart: unless-stopped
+
+
+volumes:
+  mariadb_data:
+
+networks:
+  fullstack:
+    driver: bridge
