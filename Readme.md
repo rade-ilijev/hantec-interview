@@ -1,12 +1,13 @@
 # WordPress REST API Project
 
-This project sets up a WordPress with Vue 3 frontend environment a custom REST API plugin using Docker.
+This project sets up a WordPress environment with a Vue 3 frontend and a custom REST API plugin using Docker.
 
 ## Prerequisites
 
 - Docker
 - Docker Compose
 - Git
+- PowerShell (for Windows users)
 
 ## Quick Start
 
@@ -16,24 +17,57 @@ git clone https://github.com/rade-ilijev/hantec-interview.git
 cd hantec-interview
 ```
 
-2. Start the containers:
-```bash
-docker-compose up -d
-```
+2. Run the setup script:
 
-3. Run the setup script:
+### Windows Users
+```powershell
+.\win_setup.ps1
+```
+The script will:
+- Check if Docker containers are running
+- Start containers if needed
+- Install WordPress if not installed
+- Set up the custom API plugin
+- Create test posts
+
+### Linux/Mac Users
 ```bash
+# Start the containers
+docker-compose up -d
+
+# Wait for containers to be ready
 docker-compose exec wordpress bash /var/www/html/setup-wordpress.sh
 ```
 
-4. Access WordPress:
+## Accessing the Services
+
 - WordPress Site: http://localhost:8000
 - WordPress Admin: http://localhost:8000/wp-admin
 - phpMyAdmin: http://localhost:8080
 
-Default admin credentials:
+### Default Credentials
+
+**WordPress Admin:**
 - Username: admin
 - Password: admin123
+
+**Editor User:**
+- Username: rade
+- Password: rade123
+
+## Project Structure
+
+```
+.
+├── backend/
+│   └── wp-content/
+│       └── plugins/
+│           └── custom-api/     # Custom REST API plugin
+├── frontend/                   # Vue 3 frontend application
+├── docker-compose.yml         # Docker configuration
+├── setup-wordpress.sh         # WordPress setup script
+└── win_setup.ps1             # Windows setup script
+```
 
 ## REST API Endpoints
 
@@ -49,60 +83,24 @@ GET http://localhost:8000/wp-json/custom/v1/posts
 GET http://localhost:8000/wp-json/custom/v1/posts/{id}
 ```
 
-3. Create Post
-```
-POST http://localhost:8000/wp-json/custom/v1/posts
-Content-Type: application/json
-
-{
-    "title": "Post Title",
-    "content": "Post Content",
-    "status": "publish"
-}
-```
-
-4. Update Post
-```
-PUT http://localhost:8000/wp-json/custom/v1/posts/{id}
-Content-Type: application/json
-
-{
-    "title": "Updated Title",
-    "content": "Updated Content"
-}
-```
-
-5. Delete Post
+3. Delete Post
 ```
 DELETE http://localhost:8000/wp-json/custom/v1/posts/{id}
 ```
 
-6. Login
+4. Login
 ```
 POST http://localhost:8000/wp-json/custom/v1/login
 Content-Type: application/json
 
 {
     "username": "admin",
-    "password": "your_password"
+    "password": "admin123"
 }
 ```
 
-## Testing the API
-
-You can test the API endpoints using tools like curl, Postman, or any HTTP client. Here's an example using curl:
-
-```bash
-# Get all posts
-curl http://localhost:8000/wp-json/custom/v1/posts
-
-# Create a new post
-curl -X POST http://localhost:8000/wp-json/custom/v1/posts \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Test Post","content":"This is a test post","status":"publish"}'
-
-# Login
-curl -X POST http://localhost:8000/wp-json/custom/v1/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
-```
+To work on the frontend:
+1. Navigate to the frontend directory
+2. Run `npm install`
+3. Run `npm run dev` for development
+4. Run `npm run build` for production
