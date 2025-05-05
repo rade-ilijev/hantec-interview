@@ -3,8 +3,7 @@
  * Plugin Name: Custom API
  * Description: REST API for Vue frontend.
  * Version: 1.0
- * Author: Your Name
- * License: GPL2
+ * Author: Rade Ilijev
  */
 
 // Ensure direct access is not allowed
